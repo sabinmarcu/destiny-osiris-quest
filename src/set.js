@@ -5,9 +5,10 @@ export const verifyRowSize = (row, required = 7) => row.length !== required
 export const verifyRow = (row) => [verifyRowSize(row), ...row.map(verifySymbol)].filter(Boolean);
 
 export class MalformedInputError extends Error {
-  constructor(errors) {
+  constructor(row, errors) {
     const message = 'Input Error!';
     super();
+    this.row = row;
     this.message = message;
     this.errors = errors;
   }
@@ -15,6 +16,7 @@ export class MalformedInputError extends Error {
   toString() {
     return `
 ${this.message}
+Input: ${this.row}
 Errors:
 ${this.errors.map((it) => `  ${it}`).join('\n')}
     `;
@@ -25,7 +27,7 @@ export class Set {
   constructor(...row) {
     const errors = verifyRow(row);
     if (errors.length > 0) {
-      throw new MalformedInputError(errors);
+      throw new MalformedInputError(row.join(''), errors);
     }
     this.row = row;
   }
